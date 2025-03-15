@@ -21,6 +21,6 @@ public class CustomTimer : IDisposable
     {
         _watch.Stop();
         float ms = _watch.ElapsedMilliseconds;
-        UnityEngine.Debug.Log($"{_timerName} finished:{ms:0.00}ms total,{ms / _numTests:0.000000} for {_numTests} tests.");
+        UnityEngine.Debug.Log($"{_timerName} finished:{ms:0.00}ms total,{ms / _numTests:0.000000}ms for {_numTests} tests.");
     }
 }
