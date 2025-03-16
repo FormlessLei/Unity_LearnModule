@@ -39,6 +39,14 @@ public class TestStartup : MonoBehaviour
         {
             InsTransformCapacity(commonTestNum50k, true);
         }
+        if (GUILayout.Button("DistanceTest"))
+        {
+            DistanceTest(commonTestNum10m, false);
+        }
+        if (GUILayout.Button("DistanceTestSqrt"))
+        {
+            DistanceTest(commonTestNum10m, true);
+        }
 
 
         GUILayout.Space(30);
@@ -216,8 +224,6 @@ public class TestStartup : MonoBehaviour
         //GC为362.4MB！！！
         //十万次测试，GC为3.6MB。一次36B？测试字符串长度：Player，PlayerXXXXXXXXXFVW，GC相同。
     }
-    #endregion
-
     private void InsTransformParent(int testNum, bool setParentSepartely)
     {
         Transform root = new GameObject("CreateRoot").transform;
@@ -254,7 +260,7 @@ public class TestStartup : MonoBehaviour
         Debug.Log(root.hierarchyCount);
         if (isUseCapacity)
         {
-            root.transform.hierarchyCapacity = (int)(testNum*1.1f);
+            root.transform.hierarchyCapacity = (int)(testNum * 1.1f);
             using (new CustomTimer("InsTransformWithCapacity", testNum))
             {
 
@@ -279,5 +285,56 @@ public class TestStartup : MonoBehaviour
         Debug.Log(root.hierarchyCapacity);// 98302
         Debug.Log(root.hierarchyCount);// 50001
         // 无法确定时间上的影响，但内存上应该有影响？Proflier上看不出来。
+    }
+    #endregion
+
+    private void DistanceTest(int testNum, bool isSqrt)
+    {
+        Vector3 posV3a = new Vector3(1596,15932,130);
+        Vector3 posV3b = new Vector3(050, 054, 70);
+        Vector2 posV2a = new Vector2(1596, 15932);
+        Vector2 posV2b = new Vector2(050, 054);
+        if (isSqrt)
+        {
+            using (new CustomTimer("Sqrt Distance V3", testNum))
+            {
+                for (int i = 0; i < testNum; i++)
+                {
+                    float disSq = (posV3a - posV3b).sqrMagnitude;
+                }
+            }
+            //Sqrt Distance V3 finished:425.00ms total,0.000043ms for 10000000 tests.
+
+            using (new CustomTimer("Sqrt Distance V2", testNum))
+            {
+
+                for (int i = 0; i < testNum; i++)
+                {
+                    float disSq = (posV2a - posV2b).sqrMagnitude;
+                }
+            }
+            //Sqrt Distance V2 finished:468.00ms total,0.000047ms for 10000000 tests.
+            return;
+        }
+
+        using (new CustomTimer("Distance V3", testNum))
+        {
+            for (int i = 0; i < testNum; i++)
+            {
+                float dis = Vector3.Distance(posV3a, posV3b);
+            }
+        }
+        //Distance V3 finished:433.00ms total,0.000043ms for 10000000 tests.
+
+        using (new CustomTimer("Distance V2", testNum))
+        {
+            for (int i = 0; i < testNum; i++)
+            {
+                float dis = Vector2.Distance(posV2a, posV2b);
+            }
+        }
+        //Distance V2 finished:426.00ms total,0.000043ms for 10000000 tests.
+
+        // 反直觉。Sqrt没有更快？详细说，V3是差不多，有时候快有时候慢，大多是更快；V2用sqrt反而必然慢很多。
     }
 }
